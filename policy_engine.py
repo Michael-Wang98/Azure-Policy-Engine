@@ -27,7 +27,7 @@ tenant_id = os.environ.get("AZURE_TENANT_ID")
 subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
 
 
-def main(func):
+def main(func=1):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
 
@@ -58,7 +58,7 @@ def main(func):
         # create policy definition based on template
         elif func == 5:
             policy_client = PolicyClient(credentials, subscription_id)
-            with open("AuditStorageAccounts.json") as f:
+            with open("definitions/AuditStorageAccounts.json") as f:
                 policy_client.policy_definitions.create_or_update("hello", json.load(f))
 
         # delete policy definition by name
@@ -75,4 +75,4 @@ def main(func):
 
 if __name__ == "__main__":
     import argparse
-    main(1)
+    main(5)

@@ -1,0 +1,25 @@
+{
+    "policy_type":"Custom",
+    "description":"Do not create a VM anywhere",
+    "policy_rule":{
+        "if":{
+          "allOf":[
+            {
+              "source":"action",
+              "equals":"Microsoft.Compute/virtualMachines/read"
+            },
+            {
+              "field":"location",
+              "in":[
+                "eastus",
+                "eastus2",
+                "centralus"
+              ]
+            }
+          ]
+        },
+        "then":{
+          "effect":"deny"
+        }
+    }
+}
