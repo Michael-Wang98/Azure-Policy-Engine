@@ -1,0 +1,7 @@
+azure-mgmt-resource-policy
+azure-mgmt-resource
+azure-mgmt-resource-policy-models
+azure-identity 
+pytest
+dotenv
+unittest
