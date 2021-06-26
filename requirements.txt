@@ -1,4 +1,3 @@
 azure-mgmt-resource
 azure-identity 
 pytest
-unittest
