@@ -1,0 +1,4 @@
+azure-mgmt-resource
+azure-identity 
+pytest
+python-dotenv
