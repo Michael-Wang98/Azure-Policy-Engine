@@ -1,38 +1,33 @@
+"""Policy Engine"""
 import os
 import sys
 import logging
 import json
-
 from azure.mgmt.resource.policy import PolicyClient
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.resource.policy.models import PolicyAssignment
 from azure.identity import ClientSecretCredential
-
-# import dotenv to gain the ability to get environment variables from a .env file
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # import dotenv to get environment variables from .env file
 load_dotenv()
 
-
-
-
-logging.basicConfig(stream=sys.stdout,
-                    level=logging.INFO,
-                    format='%(asctime)s:%(name)s:%(levelname)s:%(message)s')
-
-LOCATION = 'eastus'
-GROUP_NAME = 'sample'
-
-# get the environment variables
+# get environment variables
 client_id = os.environ.get("AZURE_CLIENT_ID")
 client_secret = os.environ.get("AZURE_CLIENT_SECRET")
 tenant_id = os.environ.get("AZURE_TENANT_ID")
 subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
 
 
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.INFO,
+                    format='%(asctime)s:%(name)s:%(levelname)s:%(message)s')
+
+
+# policy engine class which currently contains example uses for the policy client functions pertaining to policy
 class PolicyEngine:
     def __init__(self, credentials):
         self.credentials = credentials
 
+    # assigns a policy
     def assign_policy(self):
         policy_client = PolicyClient(self.credentials, subscription_id)
 
@@ -45,26 +40,23 @@ class PolicyEngine:
         # Create new policy assignment
         response = policy_client.policy_assignments.create("/subscriptions/" + subscription_id,
                                                                    "audit-vm-manageddisks", policy_assignment_details)
-
         return response
 
+    # deletes a policy assignment
     def delete_assignment(self):
         policy_client = PolicyClient(self.credentials, subscription_id)
 
         response = policy_client.policy_assignments.delete("/subscriptions/" + subscription_id, "audit-vm-manageddisks")
         return response
 
-    def create_resource_group(self):
-        resource_client = ResourceManagementClient(self.credentials, subscription_id)
-        response = resource_client.resource_groups.create_or_update(GROUP_NAME, {'location': LOCATION})
-        return response
-
+    # create or update a policy definition from a template
     def create_policy_definition(self):
         policy_client = PolicyClient(self.credentials, subscription_id)
         with open("definitions/AuditStorageAccounts.json") as f:
             response = policy_client.policy_definitions.create_or_update("hello", json.load(f))
         return response
 
+    # delete a policy definition
     def delete_policy_definition(self):
         policy_client = PolicyClient(self.credentials, subscription_id)
         response = policy_client.policy_definitions.delete("hello")
