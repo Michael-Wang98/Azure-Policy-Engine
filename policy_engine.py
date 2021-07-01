@@ -37,7 +37,8 @@ class PolicyEngine:
 
         # Create new policy assignment
         response = policy_client.policy_assignments.create("/subscriptions/" + subscription_id,
-                                                                   "audit-vm-manageddisks", {'policy_definition_id': "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d"})
+                                                                   "audit-vm-manageddisks", {'policy_definition_id': "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d",
+                                                                                             'description': "Shows all virtual machines not using managed disks"})
         return response
 
     # deletes a policy assignment
