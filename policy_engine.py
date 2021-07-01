@@ -32,14 +32,12 @@ class PolicyEngine:
         policy_client = PolicyClient(self.credentials, subscription_id)
 
         # Create details for the assignment
-        policy_assignment_details = PolicyAssignment(display_name="Audit VMs without managed disks Assignment",
-                                                   policy_definition_id="/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d",
-                                                   scope="/subscriptions/" + subscription_id,
-                                                   description="Shows all virtual machines not using managed disks")
+        # isn't needed probably
+        # policy_assignment_details = PolicyAssignment(policy_definition_id="/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d")
 
         # Create new policy assignment
         response = policy_client.policy_assignments.create("/subscriptions/" + subscription_id,
-                                                                   "audit-vm-manageddisks", policy_assignment_details)
+                                                                   "audit-vm-manageddisks", {'policy_definition_id': "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d"})
         return response
 
     # deletes a policy assignment
@@ -52,8 +50,10 @@ class PolicyEngine:
     # create or update a policy definition from a template
     def create_policy_definition(self):
         policy_client = PolicyClient(self.credentials, subscription_id)
-        with open("definitions/AuditStorageAccounts.json") as f:
-            response = policy_client.policy_definitions.create_or_update("hello", json.load(f))
+        definitions = os.listdir("definitions")
+        for definition in definitions:
+            with open("definitions/" + definition) as f:
+                response = policy_client.policy_definitions.create_or_update("hello", json.load(f))
         return response
 
     # delete a policy definition
@@ -83,6 +83,9 @@ def main(func=1):
         # delete policy definition by name
         elif func == 5:
             print(engine.delete_policy_definition())
+        elif func == 6:
+            dir_list = os.listdir("definitions")
+            print(dir_list)
         else:
             pass
 
