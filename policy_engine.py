@@ -15,6 +15,7 @@ client_id = os.environ.get("AZURE_CLIENT_ID")
 client_secret = os.environ.get("AZURE_CLIENT_SECRET")
 tenant_id = os.environ.get("AZURE_TENANT_ID")
 subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
+management_group_id = os.environ.get("MANAGEMENT_GROUP_ID")
 
 
 logging.basicConfig(stream=sys.stdout,
@@ -49,22 +50,33 @@ class PolicyEngine:
         return response
 
     # create or update a policy definition from a template
-    def create_policy_definition(self):
+    def create_policy_definition(self, policy_name):
         policy_client = PolicyClient(self.credentials, subscription_id)
-        definitions = os.listdir("definitions")
-        for definition in definitions:
-            with open("definitions/" + definition) as f:
-                response = policy_client.policy_definitions.create_or_update("hello", json.load(f))
+
+        with open("definitions/" + policy_name) as f:
+            response = policy_client.policy_definitions.create_or_update(policy_name.split(".")[0], json.load(f))
+
+        # definitions = os.listdir("definitions")
+        # for definition in definitions:
+        #     with open("definitions/" + definition) as f:
+        #         response = policy_client.policy_definitions.create_or_update("hello", json.load(f))
         return response
 
     # delete a policy definition
-    def delete_policy_definition(self):
+    def delete_policy_definition(self, policy_name):
         policy_client = PolicyClient(self.credentials, subscription_id)
-        response = policy_client.policy_definitions.delete("hello")
+        response = policy_client.policy_definitions.delete(policy_name)
         return response
 
+    # work in progress, create definition at management group
+    # def create_manage(self, policy_name):
+    #     policy_client = PolicyClient(self.credentials, subscription_id)
+    #     with open("definitions/" + policy_name) as f:
+    #         response = policy_client.policy_definitions.create_or_update_at_management_group(policy_name.split(".")[0], management_group_id, json.load(f))
+    #     return response
 
-def main(func=1):
+
+def main(func=4):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
 
@@ -80,13 +92,14 @@ def main(func=1):
             print(engine.create_resource_group())
         # create policy definition based on template
         elif func == 4:
-            print(engine.create_policy_definition())
+            definitions = os.listdir("definitions")
+            for definition in definitions:
+                print(engine.create_policy_definition(definition))
         # delete policy definition by name
         elif func == 5:
-            print(engine.delete_policy_definition())
+            print(engine.delete_policy_definition("hello"))
         elif func == 6:
-            dir_list = os.listdir("definitions")
-            print(dir_list)
+            engine.create_manage("AuditStorageAccounts.json")
         else:
             pass
 
