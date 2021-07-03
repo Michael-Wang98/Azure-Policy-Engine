@@ -69,14 +69,44 @@ class PolicyEngine:
         return response
 
     # work in progress, create definition at management group
-    # def create_manage(self, policy_name):
-    #     policy_client = PolicyClient(self.credentials, subscription_id)
-    #     with open("definitions/" + policy_name) as f:
-    #         response = policy_client.policy_definitions.create_or_update_at_management_group(policy_name.split(".")[0], management_group_id, json.load(f))
-    #     return response
+    def create_manage(self, policy_name):
+        policy_client = PolicyClient(self.credentials, subscription_id)
+        with open("definitions/" + policy_name) as f:
+            response = policy_client.policy_definitions.create_or_update_at_management_group(policy_name.split(".")[0], management_group_id, json.load(f))
+
+        return response
+
+    def delete_manage(self, policy_name):
+        policy_client = PolicyClient(self.credentials, subscription_id)
+        with open("definitions/" + policy_name) as f:
+            response = policy_client.policy_definitions.delete_at_management_group(policy_name.split(".")[0],
+                                                                                             management_group_id)
+
+        return response
+
+    # assigns a policy
+    def assign_management(self):
+        policy_client = PolicyClient(self.credentials, subscription_id)
+
+        # Create details for the assignment
+        # isn't needed probably
+        # policy_assignment_details = PolicyAssignment(policy_definition_id="/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d")
+
+        # Create new policy assignment
+        response = policy_client.policy_assignments.create("/providers/Microsoft.Management/managementgroups/" + management_group_id,
+                                                           "audit-vm-manageddisks", {
+                                                               'policy_definition_id': "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d"})
+        return response
+
+    # deletes a policy assignment
+    def delete_management(self):
+        policy_client = PolicyClient(self.credentials, subscription_id)
+
+        response = policy_client.policy_assignments.delete("/providers/Microsoft.Management/managementgroups/" + management_group_id, "audit-vm-manageddisks")
+        return response
 
 
-def main(func=4):
+def main(func=9):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
 
@@ -100,6 +130,12 @@ def main(func=4):
             print(engine.delete_policy_definition("hello"))
         elif func == 6:
             engine.create_manage("AuditStorageAccounts.json")
+        elif func == 7:
+            engine.delete_manage("AuditStorageAccounts.json")
+        elif func == 8:
+            engine.assign_management()
+        elif func == 9:
+            engine.delete_management()
         else:
             pass
 
