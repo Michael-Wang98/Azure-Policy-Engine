@@ -121,8 +121,60 @@ class PolicyEngine:
     #     response = policy_client.policy_assignments.delete("/providers/Microsoft.Management/managementgroups/" + management_group_id, "audit-vm-manageddisks")
     #     return response
 
+    def create_initiative(self, is_sub):
+        policy_client = PolicyClient(self.credentials, subscription_id)
+        if is_sub:
+            response = policy_client.policy_set_definitions.create_or_update(
+                "test_initiative",
+                {
+                    "properties": {
+                        "displayName": "Cost Management",
+                        "description": "Policies to enforce low cost storage SKUs",
+                        "metadata": {
+                            "category": "Cost Management"
+                        },
+                        "policyDefinitions": [
+                            {
+                                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/0015ea4d-51ff-4ce3-8d8c-f3f8f0179a56",
+                                "parameters": {
+                                }
+                            }
+                        ]
+                    }
+                }
+            )
+        else:
+            response = policy_client.policy_set_definitions.create_or_update_at_management_group(
+                "test_initiative",
+                management_group_id,
+                {
+                    "properties": {
+                        "displayName": "Cost Management",
+                        "description": "Policies to enforce low cost storage SKUs",
+                        "metadata": {
+                            "category": "Cost Management"
+                        },
+                        "policyDefinitions": [
+                            {
+                                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/0015ea4d-51ff-4ce3-8d8c-f3f8f0179a56",
+                                "parameters": {
+                                }
+                            }
+                        ]
+                    }
+                }
+            )
+        return response
 
-def main(func=5):
+    def delete_initiative(self, is_sub):
+        policy_client = PolicyClient(self.credentials, subscription_id)
+        if is_sub:
+            policy_client.policy_set_definitions.delete("test_initiative")
+        else:
+            policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
+
+
+def main(func=11):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
 
@@ -149,6 +201,10 @@ def main(func=5):
         #     engine.assign_management()
         # elif func == 9:
         #     engine.delete_management()
+        elif func == 10:
+            engine.create_initiative(True)
+        elif func == 11:
+            engine.delete_initiative(False)
         else:
             pass
 
