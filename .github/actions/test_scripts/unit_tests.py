@@ -1,6 +1,6 @@
 import sys 
 
-sys.path.append('../../../policy_engine.py')
+sys.path.append('../../../')
 
 import policy_engine
 
