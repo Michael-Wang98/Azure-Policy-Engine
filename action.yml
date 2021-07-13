@@ -1,0 +1,7 @@
+name: "unit test for policy engine"
+
+description: "Run Unit Tests using Pytest"
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
