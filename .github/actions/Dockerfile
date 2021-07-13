@@ -6,4 +6,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "/src/thing.py" ]
+CMD [ "python", "/test_scripts/unit_tests.py" ]
