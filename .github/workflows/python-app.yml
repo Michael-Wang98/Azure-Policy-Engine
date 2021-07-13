@@ -39,6 +39,7 @@ on:
 #         AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 #         AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 #         AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#         AZURE_MANAGEMENT_GROUP_ID: ${{ secrets.AZURE_MANAGEMENT_GROUP_ID }}
 jobs:
   action:
     runs-on: ubuntu-latest
