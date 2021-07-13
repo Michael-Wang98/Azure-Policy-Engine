@@ -1,6 +1,6 @@
-name: "my cat fact action"
+name: "unit test for policy engine"
 
-description: "Do a thing"
+description: "Run Unit Tests using Pytest"
 
 runs:
   using: "docker"
