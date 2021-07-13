@@ -1,7 +1,7 @@
-import sys 
+# import sys 
 
-sys.path.append('../../../')
+# sys.path.append('../../../')
 
-import policy_engine
+from ../../../policy_engine.py import PolicyEngine
 
 print("Hello")
