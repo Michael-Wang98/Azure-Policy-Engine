@@ -174,7 +174,7 @@ class PolicyEngine:
             policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
 
 
-def main(func=11):
+def main(func=10):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
 
