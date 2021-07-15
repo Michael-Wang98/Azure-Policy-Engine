@@ -25,12 +25,12 @@ logging.basicConfig(stream=sys.stdout,
 
 # policy engine class which currently contains example uses for the policy client functions pertaining to policy
 class PolicyEngine:
-    def __init__(self, credentials):
-        self.credentials = credentials
+    def __init__(self, policy_client):
+        self.policy_client = policy_client
 
     # assigns a policy
     def assign_policy(self, is_sub):
-        policy_client = PolicyClient(self.credentials, subscription_id)
+
 
         # Create details for the assignment
         # isn't needed probably
@@ -38,11 +38,11 @@ class PolicyEngine:
 
         if is_sub:
             # Create new policy assignment
-            response = policy_client.policy_assignments.create("/subscriptions/" + subscription_id,
+            response = self.policy_client.policy_assignments.create("/subscriptions/" + subscription_id,
                                                                        "audit-vm-manageddisks", {'policy_definition_id': "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d",
                                                                                                  'description': "Shows all virtual machines not using managed disks"})
         else:
-            response = policy_client.policy_assignments.create(
+            response = self.policy_client.policy_assignments.create(
                 "/providers/Microsoft.Management/managementgroups/" + management_group_id,
                 "audit-vm-manageddisks", {
                     'policy_definition_id': "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d"})
@@ -51,24 +51,24 @@ class PolicyEngine:
 
     # deletes a policy assignment
     def delete_assignment(self, is_sub):
-        policy_client = PolicyClient(self.credentials, subscription_id)
+        # policy_client = PolicyClient(self.credentials, subscription_id)
         if is_sub:
-            response = policy_client.policy_assignments.delete("/subscriptions/" + subscription_id, "audit-vm-manageddisks")
+            response = self.policy_client.policy_assignments.delete("/subscriptions/" + subscription_id, "audit-vm-manageddisks")
         else:
-            response = policy_client.policy_assignments.delete(
+            response = self.policy_client.policy_assignments.delete(
                 "/providers/Microsoft.Management/managementgroups/" + management_group_id, "audit-vm-manageddisks")
         return response
 
     # create or update a policy definition from a template
     def create_policy_definition(self, policy_name, is_sub):
-        policy_client = PolicyClient(self.credentials, subscription_id)
+        # policy_client = PolicyClient(self.credentials, subscription_id)
 
         if is_sub:
             with open("definitions/" + policy_name) as f:
-                response = policy_client.policy_definitions.create_or_update(policy_name.split(".")[0], json.load(f))
+                response = self.policy_client.policy_definitions.create_or_update(policy_name.split(".")[0], json.load(f))
         else:
             with open("definitions/" + policy_name) as f:
-                response = policy_client.policy_definitions.create_or_update_at_management_group(policy_name.split(".")[0], management_group_id, json.load(f))
+                response = self.policy_client.policy_definitions.create_or_update_at_management_group(policy_name.split(".")[0], management_group_id, json.load(f))
         # definitions = os.listdir("definitions")
         # for definition in definitions:
         #     with open("definitions/" + definition) as f:
@@ -77,54 +77,17 @@ class PolicyEngine:
 
     # delete a policy definition
     def delete_policy_definition(self, policy_name, is_sub):
-        policy_client = PolicyClient(self.credentials, subscription_id)
+        # policy_client = PolicyClient(self.credentials, subscription_id)
         if is_sub:
-            response = policy_client.policy_definitions.delete(policy_name)
+            response = self.policy_client.policy_definitions.delete(policy_name)
         else:
-            response = policy_client.policy_definitions.delete_at_management_group(policy_name, management_group_id)
+            response = self.policy_client.policy_definitions.delete_at_management_group(policy_name, management_group_id)
         return response
 
-    # # work in progress, create definition at management group
-    # def create_manage(self, policy_name):
-    #     policy_client = PolicyClient(self.credentials, subscription_id)
-    #     with open("definitions/" + policy_name) as f:
-    #         response = policy_client.policy_definitions.create_or_update_at_management_group(policy_name.split(".")[0], management_group_id, json.load(f))
-    #
-    #     return response
-    #
-    # def delete_manage(self, policy_name):
-    #     policy_client = PolicyClient(self.credentials, subscription_id)
-    #     with open("definitions/" + policy_name) as f:
-    #         response = policy_client.policy_definitions.delete_at_management_group(policy_name.split(".")[0],
-    #                                                                                          management_group_id)
-    #
-    #     return response
-    #
-    # # assigns a policy
-    # def assign_management(self):
-    #     policy_client = PolicyClient(self.credentials, subscription_id)
-    #
-    #     # Create details for the assignment
-    #     # isn't needed probably
-    #     # policy_assignment_details = PolicyAssignment(policy_definition_id="/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d")
-    #
-    #     # Create new policy assignment
-    #     response = policy_client.policy_assignments.create("/providers/Microsoft.Management/managementgroups/" + management_group_id,
-    #                                                        "audit-vm-manageddisks", {
-    #                                                            'policy_definition_id': "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d"})
-    #     return response
-    #
-    # # deletes a policy assignment
-    # def delete_management(self):
-    #     policy_client = PolicyClient(self.credentials, subscription_id)
-    #
-    #     response = policy_client.policy_assignments.delete("/providers/Microsoft.Management/managementgroups/" + management_group_id, "audit-vm-manageddisks")
-    #     return response
-
     def create_initiative(self, is_sub):
-        policy_client = PolicyClient(self.credentials, subscription_id)
+        # policy_client = PolicyClient(self.credentials, subscription_id)
         if is_sub:
-            response = policy_client.policy_set_definitions.create_or_update(
+            response = self.policy_client.policy_set_definitions.create_or_update(
                 "test_initiative",
                 {
                     "properties": {
@@ -144,7 +107,7 @@ class PolicyEngine:
                 }
             )
         else:
-            response = policy_client.policy_set_definitions.create_or_update_at_management_group(
+            response = self.policy_client.policy_set_definitions.create_or_update_at_management_group(
                 "test_initiative",
                 management_group_id,
                 {
@@ -167,18 +130,18 @@ class PolicyEngine:
         return response
 
     def delete_initiative(self, is_sub):
-        policy_client = PolicyClient(self.credentials, subscription_id)
+        # policy_client = PolicyClient(self.credentials, subscription_id)
         if is_sub:
-            policy_client.policy_set_definitions.delete("test_initiative")
+            self.policy_client.policy_set_definitions.delete("test_initiative")
         else:
-            policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
+            self.policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
 
 
-def main(func=10):
+def main(func=1):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
-
-        engine = PolicyEngine(credentials)
+        policy_client = PolicyClient(credentials, subscription_id)
+        engine = PolicyEngine(policy_client)
         # assign policy
         if func == 1:
             print(engine.assign_policy(False))

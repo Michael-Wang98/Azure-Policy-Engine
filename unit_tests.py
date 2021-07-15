@@ -2,6 +2,7 @@
 import policy_engine
 import unittest
 from unittest import mock
+from azure.mgmt.resource.policy import PolicyClient
 
 import os
 from azure.identity import ClientSecretCredential
@@ -16,10 +17,12 @@ class PolicyTestCase(unittest.TestCase):
         client_id = os.environ.get("AZURE_CLIENT_ID")
         client_secret = os.environ.get("AZURE_CLIENT_SECRET")
         tenant_id = os.environ.get("AZURE_TENANT_ID")
+        subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
+        management_group_id = os.environ.get("MANAGEMENT_GROUP_ID")
 
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
-
-        self.inst = policy_engine.PolicyEngine(credentials)
+        policy_client = PolicyClient(credentials, subscription_id)
+        self.inst = policy_engine.PolicyEngine(policy_client)
 
     def test_assign_policy_passes(self):
         self.assertTrue("Shows all virtual machines not using managed disks" in str(self.inst.assign_policy(True)))
