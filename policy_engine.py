@@ -51,7 +51,7 @@ class PolicyEngine:
 
     # deletes a policy assignment
     def delete_assignment(self, is_sub):
-        # policy_client = PolicyClient(self.credentials, subscription_id)
+
         if is_sub:
             response = self.policy_client.policy_assignments.delete("/subscriptions/" + subscription_id, "audit-vm-manageddisks")
         else:
@@ -61,7 +61,7 @@ class PolicyEngine:
 
     # create or update a policy definition from a template
     def create_policy_definition(self, policy_name, is_sub):
-        # policy_client = PolicyClient(self.credentials, subscription_id)
+
 
         if is_sub:
             with open("definitions/" + policy_name) as f:
@@ -77,56 +77,23 @@ class PolicyEngine:
 
     # delete a policy definition
     def delete_policy_definition(self, policy_name, is_sub):
-        # policy_client = PolicyClient(self.credentials, subscription_id)
+
         if is_sub:
             response = self.policy_client.policy_definitions.delete(policy_name)
         else:
             response = self.policy_client.policy_definitions.delete_at_management_group(policy_name, management_group_id)
         return response
 
-    def create_initiative(self, is_sub):
-        # policy_client = PolicyClient(self.credentials, subscription_id)
+    def create_initiative(self, initiative_name, is_sub):
+
         if is_sub:
-            response = self.policy_client.policy_set_definitions.create_or_update(
-                "test_initiative",
-                {
-                    "properties": {
-                        "displayName": "Cost Management",
-                        "description": "Policies to enforce low cost storage SKUs",
-                        "metadata": {
-                            "category": "Cost Management"
-                        },
-                        "policyDefinitions": [
-                            {
-                                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/0015ea4d-51ff-4ce3-8d8c-f3f8f0179a56",
-                                "parameters": {
-                                }
-                            }
-                        ]
-                    }
-                }
-            )
+            with open("initiatives/" + initiative_name) as f:
+                response = self.policy_client.policy_set_definitions.create_or_update(initiative_name.split(".")[0], json.load(f))
+
         else:
-            response = self.policy_client.policy_set_definitions.create_or_update_at_management_group(
-                "test_initiative",
-                management_group_id,
-                {
-                    "properties": {
-                        "displayName": "Cost Management",
-                        "description": "Policies to enforce low cost storage SKUs",
-                        "metadata": {
-                            "category": "Cost Management"
-                        },
-                        "policyDefinitions": [
-                            {
-                                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/0015ea4d-51ff-4ce3-8d8c-f3f8f0179a56",
-                                "parameters": {
-                                }
-                            }
-                        ]
-                    }
-                }
-            )
+            with open("initiatives/" + initiative_name) as f:
+                response = self.policy_client.policy_set_definitions.create_or_update_at_management_group(initiative_name.split(".")[0], management_group_id, json.load(f))
+
         return response
 
     def delete_initiative(self, is_sub):
@@ -137,7 +104,7 @@ class PolicyEngine:
             self.policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
 
 
-def main(func=1):
+def main(func=10):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
         policy_client = PolicyClient(credentials, subscription_id)
@@ -156,16 +123,11 @@ def main(func=1):
         # delete policy definition by name
         elif func == 5:
             print(engine.delete_policy_definition("hello", True))
-        # elif func == 6:
-        #     engine.create_manage("AuditStorageAccounts.json")
-        # elif func == 7:
-        #     engine.delete_manage("AuditStorageAccounts.json")
-        # elif func == 8:
-        #     engine.assign_management()
-        # elif func == 9:
-        #     engine.delete_management()
         elif func == 10:
-            engine.create_initiative(True)
+            initiatives = os.listdir("initiatives")
+            for initiative in initiatives:
+                print(engine.create_initiative(initiative, False))
+            # engine.create_initiative(True)
         elif func == 11:
             engine.delete_initiative(False)
         else:

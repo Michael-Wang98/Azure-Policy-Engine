@@ -1,0 +1,16 @@
+{
+    "properties": {
+        "displayName": "Cost Management",
+        "description": "Policies to enforce low cost storage SKUs",
+        "metadata": {
+            "category": "Cost Management"
+        },
+        "policyDefinitions": [
+            {
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/0015ea4d-51ff-4ce3-8d8c-f3f8f0179a56",
+                "parameters": {
+                }
+            }
+        ]
+    }
+}
