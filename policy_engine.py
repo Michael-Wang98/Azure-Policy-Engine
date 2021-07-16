@@ -30,8 +30,6 @@ class PolicyEngine:
 
     # assigns a policy
     def assign_policy(self, is_sub):
-
-
         # Create details for the assignment
         # isn't needed probably
         # policy_assignment_details = PolicyAssignment(policy_definition_id="/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d")
@@ -61,23 +59,16 @@ class PolicyEngine:
 
     # create or update a policy definition from a template
     def create_policy_definition(self, policy_name, is_sub):
-
-
         if is_sub:
             with open("definitions/" + policy_name) as f:
                 response = self.policy_client.policy_definitions.create_or_update(policy_name.split(".")[0], json.load(f))
         else:
             with open("definitions/" + policy_name) as f:
                 response = self.policy_client.policy_definitions.create_or_update_at_management_group(policy_name.split(".")[0], management_group_id, json.load(f))
-        # definitions = os.listdir("definitions")
-        # for definition in definitions:
-        #     with open("definitions/" + definition) as f:
-        #         response = policy_client.policy_definitions.create_or_update("hello", json.load(f))
         return response
 
     # delete a policy definition
     def delete_policy_definition(self, policy_name, is_sub):
-
         if is_sub:
             response = self.policy_client.policy_definitions.delete(policy_name)
         else:
@@ -85,11 +76,9 @@ class PolicyEngine:
         return response
 
     def create_initiative(self, initiative_name, is_sub):
-
         if is_sub:
             with open("initiatives/" + initiative_name) as f:
                 response = self.policy_client.policy_set_definitions.create_or_update(initiative_name.split(".")[0], json.load(f))
-
         else:
             with open("initiatives/" + initiative_name) as f:
                 response = self.policy_client.policy_set_definitions.create_or_update_at_management_group(initiative_name.split(".")[0], management_group_id, json.load(f))
@@ -97,7 +86,6 @@ class PolicyEngine:
         return response
 
     def delete_initiative(self, is_sub):
-        # policy_client = PolicyClient(self.credentials, subscription_id)
         if is_sub:
             self.policy_client.policy_set_definitions.delete("test_initiative")
         else:
