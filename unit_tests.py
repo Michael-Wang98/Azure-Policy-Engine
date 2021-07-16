@@ -11,15 +11,15 @@ from azure.identity import ClientSecretCredential
 from dotenv import load_dotenv
 load_dotenv()
 
+client_id = os.environ.get("AZURE_CLIENT_ID")
+client_secret = os.environ.get("AZURE_CLIENT_SECRET")
+tenant_id = os.environ.get("AZURE_TENANT_ID")
+subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
+management_group_id = os.environ.get("MANAGEMENT_GROUP_ID")
+
 
 class PolicyTestCase(unittest.TestCase):
     def setUp(self):
-        client_id = os.environ.get("AZURE_CLIENT_ID")
-        client_secret = os.environ.get("AZURE_CLIENT_SECRET")
-        tenant_id = os.environ.get("AZURE_TENANT_ID")
-        subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
-        management_group_id = os.environ.get("MANAGEMENT_GROUP_ID")
-
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
         policy_client = PolicyClient(credentials, subscription_id)
         self.inst = policy_engine.PolicyEngine(policy_client)
