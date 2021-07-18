@@ -28,6 +28,11 @@ class PolicyEngine:
     def __init__(self, policy_client):
         self.policy_client = policy_client
 
+
+class AssignmentEngine(PolicyEngine):
+    def __init__(self, policy_client):
+        super().__init__(policy_client)
+
     # assigns a policy
     def assign_policy(self, is_sub):
         # Create details for the assignment
@@ -48,14 +53,18 @@ class PolicyEngine:
         return response
 
     # deletes a policy assignment
-    def delete_assignment(self, is_sub):
-
+    def delete_assignment(self, assignment_name, is_sub):
         if is_sub:
-            response = self.policy_client.policy_assignments.delete("/subscriptions/" + subscription_id, "audit-vm-manageddisks")
+            response = self.policy_client.policy_assignments.delete("/subscriptions/" + subscription_id, assignment_name)
         else:
             response = self.policy_client.policy_assignments.delete(
-                "/providers/Microsoft.Management/managementgroups/" + management_group_id, "audit-vm-manageddisks")
+                "/providers/Microsoft.Management/managementgroups/" + management_group_id, assignment_name)
         return response
+
+
+class DefinitionEngine(PolicyEngine):
+    def __init__(self, policy_client):
+        super().__init__(policy_client)
 
     # create or update a policy definition from a template
     def create_policy_definition(self, policy_name, is_sub):
@@ -75,6 +84,11 @@ class PolicyEngine:
             response = self.policy_client.policy_definitions.delete_at_management_group(policy_name, management_group_id)
         return response
 
+
+class InitiativeEngine(PolicyEngine):
+    def __init__(self, policy_client):
+        super().__init__(policy_client)
+
     def create_initiative(self, initiative_name, is_sub):
         if is_sub:
             with open("initiatives/" + initiative_name) as f:
@@ -92,31 +106,36 @@ class PolicyEngine:
             self.policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
 
 
-def main(func=10):
+def main(func=6):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
         policy_client = PolicyClient(credentials, subscription_id)
-        engine = PolicyEngine(policy_client)
         # assign policy
         if func == 1:
+            engine = AssignmentEngine(policy_client)
             print(engine.assign_policy(False))
         # delete policy assignment
         elif func == 2:
-            print(engine.delete_assignment(True))
+            engine = AssignmentEngine(policy_client)
+            print(engine.delete_assignment("audit-vm-manageddisks", True))
         # create policy definition based on template
-        elif func == 4:
+        elif func == 3:
+            engine = DefinitionEngine(policy_client)
             definitions = os.listdir("definitions")
             for definition in definitions:
                 print(engine.create_policy_definition(definition, False))
         # delete policy definition by name
-        elif func == 5:
+        elif func == 4:
+            engine = DefinitionEngine(policy_client)
             print(engine.delete_policy_definition("hello", True))
-        elif func == 10:
+        elif func == 5:
+            engine = InitiativeEngine(policy_client)
             initiatives = os.listdir("initiatives")
             for initiative in initiatives:
                 print(engine.create_initiative(initiative, False))
             # engine.create_initiative(True)
-        elif func == 11:
+        elif func == 6:
+            engine = InitiativeEngine(policy_client)
             engine.delete_initiative(False)
         else:
             pass
