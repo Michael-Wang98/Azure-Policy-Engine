@@ -25,13 +25,13 @@ class PolicyTestCase(unittest.TestCase):
         self.inst = policy_engine.AssignmentEngine(policy_client)
 
     def test_assign_policy_passes(self):
-        self.assertTrue("Shows all virtual machines not using managed disks" in str(self.inst.assign_policy(True)))
+        self.assertTrue("Shows all virtual machines not using managed disks" in str(self.inst.assign_policy("audit-vm-manageddisks.json", True)))
 
     def test_invalid_credentials(self):
         self.inst.assign_policy = mock.Mock(side_effect=Exception('This is broken'))
 
         with self.assertRaises(Exception) as context:
-            self.inst.assign_policy(True)
+            self.inst.assign_policy("audit-vm-manageddisks.json", True)
 
         self.assertTrue('This is broken' in str(context.exception))
 

@@ -34,22 +34,16 @@ class AssignmentEngine(PolicyEngine):
         super().__init__(policy_client)
 
     # assigns a policy
-    def assign_policy(self, is_sub):
+    def assign_policy(self, assignment_name, is_sub):
         # Create details for the assignment
-        # isn't needed probably
-        # policy_assignment_details = PolicyAssignment(policy_definition_id="/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d")
-
         if is_sub:
             # Create new policy assignment
-            response = self.policy_client.policy_assignments.create("/subscriptions/" + subscription_id,
-                                                                       "audit-vm-manageddisks", {'policy_definition_id': "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d",
-                                                                                                 'description': "Shows all virtual machines not using managed disks"})
+            with open("assignments/" + assignment_name) as f:
+                response = self.policy_client.policy_assignments.create("/subscriptions/" + subscription_id, assignment_name.split(".")[0], json.load(f))
         else:
-            response = self.policy_client.policy_assignments.create(
-                "/providers/Microsoft.Management/managementgroups/" + management_group_id,
-                "audit-vm-manageddisks", {
-                    'policy_definition_id': "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d"})
-
+            with open("assignments/" + assignment_name) as f:
+                response = self.policy_client.policy_assignments.create("/providers/Microsoft.Management/managementgroups/" + management_group_id,
+                                                                        assignment_name.split(".")[0], json.load(f))
         return response
 
     # deletes a policy assignment
@@ -106,14 +100,16 @@ class InitiativeEngine(PolicyEngine):
             self.policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
 
 
-def main(func=6):
+def main(func=2):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
         policy_client = PolicyClient(credentials, subscription_id)
         # assign policy
         if func == 1:
             engine = AssignmentEngine(policy_client)
-            print(engine.assign_policy(False))
+            assignments = os.listdir("assignments")
+            for assignment in assignments:
+                print(engine.assign_policy(assignment, False))
         # delete policy assignment
         elif func == 2:
             engine = AssignmentEngine(policy_client)
