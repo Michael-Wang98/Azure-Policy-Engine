@@ -36,23 +36,15 @@ class AssignmentEngine(PolicyEngine):
     # assigns a policy
     def assign_policy(self, assignment_name, is_sub):
         # Create details for the assignment
-        if is_sub:
-            # Create new policy assignment
-            with open("assignments/" + assignment_name) as f:
-                response = self.policy_client.policy_assignments.create("/subscriptions/" + subscription_id, assignment_name.split(".")[0], json.load(f))
-        else:
-            with open("assignments/" + assignment_name) as f:
-                response = self.policy_client.policy_assignments.create("/providers/Microsoft.Management/managementgroups/" + management_group_id,
-                                                                        assignment_name.split(".")[0], json.load(f))
+        scope = "/subscriptions/" + subscription_id if is_sub else "/providers/Microsoft.Management/managementgroups/" + management_group_id
+        with open("assignments/" + assignment_name) as f:
+            response = self.policy_client.policy_assignments.create(scope, assignment_name.split(".")[0], json.load(f))
         return response
 
     # deletes a policy assignment
     def delete_assignment(self, assignment_name, is_sub):
-        if is_sub:
-            response = self.policy_client.policy_assignments.delete("/subscriptions/" + subscription_id, assignment_name)
-        else:
-            response = self.policy_client.policy_assignments.delete(
-                "/providers/Microsoft.Management/managementgroups/" + management_group_id, assignment_name)
+        scope = "/subscriptions/" + subscription_id if is_sub else "/providers/Microsoft.Management/managementgroups/" + management_group_id
+        response = self.policy_client.policy_assignments.delete(scope, assignment_name)
         return response
 
 
@@ -100,7 +92,7 @@ class InitiativeEngine(PolicyEngine):
             self.policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
 
 
-def main(func=2):
+def main(func=1):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
         policy_client = PolicyClient(credentials, subscription_id)
