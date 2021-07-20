@@ -104,18 +104,18 @@ class InitiativeEngine(PolicyEngine):
             logging.error('Error creating initiative: %s', initiative_name, exc_info=True)
             raise e
 
-    def delete_initiative(self, is_sub):
+    def delete_initiative(self, initiative_name, is_sub):
         try:
             if is_sub:
-                self.policy_client.policy_set_definitions.delete("test_initiative")
+                self.policy_client.policy_set_definitions.delete(initiative_name)
             else:
-                self.policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
+                self.policy_client.policy_set_definitions.delete_at_management_group(initiative_name, management_group_id)
         except Exception as e:
             logging.error('Error deleting initiative: %s', initiative_name, exc_info=True)
             raise e
 
 
-def main(func=1):
+def main(func=6):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
         policy_client = PolicyClient(credentials, subscription_id)
@@ -146,7 +146,7 @@ def main(func=1):
                 print(engine.create_initiative(initiative, False))
         elif func == 6:
             engine = InitiativeEngine(policy_client)
-            engine.delete_initiative(False)
+            engine.delete_initiative("test_initiative", False)
         else:
             pass
 
