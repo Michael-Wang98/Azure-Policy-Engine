@@ -35,17 +35,25 @@ class AssignmentEngine(PolicyEngine):
 
     # assigns a policy
     def assign_policy(self, assignment_name, is_sub):
-        # Create details for the assignment
-        scope = "/subscriptions/" + subscription_id if is_sub else "/providers/Microsoft.Management/managementgroups/" + management_group_id
-        with open("assignments/" + assignment_name) as f:
-            response = self.policy_client.policy_assignments.create(scope, assignment_name.split(".")[0], json.load(f))
-        return response
+        try:
+            # Create details for the assignment
+            scope = "/subscriptions/" + subscription_id if is_sub else "/providers/Microsoft.Management/managementgroups/" + management_group_id
+            with open("assignments/" + assignment_name) as f:
+                response = self.policy_client.policy_assignments.create(scope, assignment_name.split(".")[0], json.load(f))
+            return response
+        except Exception as e:
+            logging.error('Error creating assignment: %s', assignment_name, exc_info=True)
+            raise e
 
     # deletes a policy assignment
     def delete_assignment(self, assignment_name, is_sub):
-        scope = "/subscriptions/" + subscription_id if is_sub else "/providers/Microsoft.Management/managementgroups/" + management_group_id
-        response = self.policy_client.policy_assignments.delete(scope, assignment_name)
-        return response
+        try:
+            scope = "/subscriptions/" + subscription_id if is_sub else "/providers/Microsoft.Management/managementgroups/" + management_group_id
+            response = self.policy_client.policy_assignments.delete(scope, assignment_name)
+            return response
+        except Exception as e:
+            logging.error('Error deleting assignment: %s', assignment_name, exc_info=True)
+            raise e
 
 
 class DefinitionEngine(PolicyEngine):
@@ -54,21 +62,29 @@ class DefinitionEngine(PolicyEngine):
 
     # create or update a policy definition from a template
     def create_policy_definition(self, policy_name, is_sub):
-        if is_sub:
-            with open("definitions/" + policy_name) as f:
-                response = self.policy_client.policy_definitions.create_or_update(policy_name.split(".")[0], json.load(f))
-        else:
-            with open("definitions/" + policy_name) as f:
-                response = self.policy_client.policy_definitions.create_or_update_at_management_group(policy_name.split(".")[0], management_group_id, json.load(f))
-        return response
+        try:
+            if is_sub:
+                with open("definitions/" + policy_name) as f:
+                    response = self.policy_client.policy_definitions.create_or_update(policy_name.split(".")[0], json.load(f))
+            else:
+                with open("definitions/" + policy_name) as f:
+                    response = self.policy_client.policy_definitions.create_or_update_at_management_group(policy_name.split(".")[0], management_group_id, json.load(f))
+            return response
+        except Exception as e:
+            logging.error('Error creating definition: %s', policy_name, exc_info=True)
+            raise e
 
     # delete a policy definition
     def delete_policy_definition(self, policy_name, is_sub):
-        if is_sub:
-            response = self.policy_client.policy_definitions.delete(policy_name)
-        else:
-            response = self.policy_client.policy_definitions.delete_at_management_group(policy_name, management_group_id)
-        return response
+        try:
+            if is_sub:
+                response = self.policy_client.policy_definitions.delete(policy_name)
+            else:
+                response = self.policy_client.policy_definitions.delete_at_management_group(policy_name, management_group_id)
+            return response
+        except Exception as e:
+            logging.error('Error deleting definition: %s', policy_name, exc_info=True)
+            raise e
 
 
 class InitiativeEngine(PolicyEngine):
@@ -76,20 +92,27 @@ class InitiativeEngine(PolicyEngine):
         super().__init__(policy_client)
 
     def create_initiative(self, initiative_name, is_sub):
-        if is_sub:
-            with open("initiatives/" + initiative_name) as f:
-                response = self.policy_client.policy_set_definitions.create_or_update(initiative_name.split(".")[0], json.load(f))
-        else:
-            with open("initiatives/" + initiative_name) as f:
-                response = self.policy_client.policy_set_definitions.create_or_update_at_management_group(initiative_name.split(".")[0], management_group_id, json.load(f))
-
-        return response
+        try:
+            if is_sub:
+                with open("initiatives/" + initiative_name) as f:
+                    response = self.policy_client.policy_set_definitions.create_or_update(initiative_name.split(".")[0], json.load(f))
+            else:
+                with open("initiatives/" + initiative_name) as f:
+                    response = self.policy_client.policy_set_definitions.create_or_update_at_management_group(initiative_name.split(".")[0], management_group_id, json.load(f))
+            return response
+        except Exception as e:
+            logging.error('Error creating initiative: %s', initiative_name, exc_info=True)
+            raise e
 
     def delete_initiative(self, is_sub):
-        if is_sub:
-            self.policy_client.policy_set_definitions.delete("test_initiative")
-        else:
-            self.policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
+        try:
+            if is_sub:
+                self.policy_client.policy_set_definitions.delete("test_initiative")
+            else:
+                self.policy_client.policy_set_definitions.delete_at_management_group("test_initiative", management_group_id)
+        except Exception as e:
+            logging.error('Error deleting initiative: %s', initiative_name, exc_info=True)
+            raise e
 
 
 def main(func=1):
@@ -121,7 +144,6 @@ def main(func=1):
             initiatives = os.listdir("initiatives")
             for initiative in initiatives:
                 print(engine.create_initiative(initiative, False))
-            # engine.create_initiative(True)
         elif func == 6:
             engine = InitiativeEngine(policy_client)
             engine.delete_initiative(False)
