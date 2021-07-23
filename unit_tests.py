@@ -22,7 +22,7 @@ class PolicyTestCase(unittest.TestCase):
     def setUp(self):
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
         policy_client = PolicyClient(credentials, subscription_id)
-        self.inst = policy_engine.AssignmentEngine(policy_client)
+        self.inst = policy_engine.AssignmentEngine(policy_client, subscription_id, management_group_id)
 
     def test_assign_policy_passes(self):
         self.assertTrue("Shows all virtual machines not using managed disks" in str(self.inst.assign_policy("audit-vm-manageddisks.json", True)))
