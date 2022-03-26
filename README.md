@@ -1,6 +1,6 @@
 # Azure-Policy-Engine
 
-Microsfot Azure Policy is a useful tool to enforce organizational standards and ensure compliance but managing policy purely though the Azure Portal is labour intensive and repetitive which makes a programmatic solution that manages Azure Policy useful. The Policy Engine is a software tool to interface with Azure Policy without having to use the Portal, Azure CLI or REST API calls which are all slower than a pure Python3 solution using the Azure SDK for Python. Create/Manage/Delete Azure Policies at specific scopes with a few simple commands. The Policy Engine comes with a github actions workflow which ensures the code is properly linted and passes a suite of unit and integration tests on commit.
+Microsoft Azure Policy is a useful tool to enforce organizational standards and ensure compliance but managing policy purely though the Azure Portal is labour intensive and repetitive which makes a programmatic solution that manages Azure Policy useful. The Policy Engine is a software tool to interface with Azure Policy without having to use the Portal, Azure CLI or REST API calls which are all slower than a pure Python3 solution using the Azure SDK for Python. Create/Manage/Delete Azure Policies at specific scopes with a few simple commands. The Policy Engine comes with a github actions workflow which ensures the code is properly linted and passes a suite of unit and integration tests on commit.
 
 ## Installation
 
