@@ -10,13 +10,12 @@ git clone https://github.com/Michael-Wang98/Azure-Policy-Engine.git
 ```
 2. Create a .env file in the local directory and enter the Azure credentials of the client using the policy engine according to the template shown below links to documentation for getting these values below
 
+```
 AZURE_CLIENT_ID = <YOUR_CLIENT_ID_HERE>
-
 AZURE_CLIENT_SECRET = <YOUR_CLIENT_SECRET_HERE>
-
 AZURE_TENANT_ID = <YOUR_TENANT_ID_HERE>
-
 AZURE_SUBSCRIPTION_ID = <YOUR_SUBSCRIPTION_ID_HERE>
+```
 
 3. Install dependencies as specified in the requirements.txt file 
 
