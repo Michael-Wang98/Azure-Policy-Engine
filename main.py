@@ -21,7 +21,7 @@ logging.basicConfig(stream=sys.stdout,
                     format='%(asctime)s:%(name)s:%(levelname)s:%(message)s')
 
 
-def main(func=2):
+def main(func=4):
     try:
         credentials = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
         policy_client = PolicyClient(credentials, subscription_id)
