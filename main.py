@@ -45,11 +45,13 @@ def main(func=4):
         elif func == 4:
             engine = policy_engine.DefinitionEngine(policy_client, subscription_id, management_group_id)
             print(engine.delete_policy_definition("hello", True))
+        # create policy initiative
         elif func == 5:
             engine = policy_engine.InitiativeEngine(policy_client, subscription_id, management_group_id)
             initiatives = os.listdir("initiatives")
             for initiative in initiatives:
                 print(engine.create_initiative(initiative, False))
+        # delete policy initiative by name
         elif func == 6:
             engine = policy_engine.InitiativeEngine(policy_client, subscription_id, management_group_id)
             engine.delete_initiative("test_initiative", False)
